@@ -14,7 +14,7 @@ function Home({dispatch, handleShowChat}) {
     >
       <div className='md:w-[700px] flex justify-center items-start flex-col h-full overflow-hidden'>
 
-   <h1 className='text-4xl md:text-6xl text-white uppercase my-5 mx-6 leading-[3rem] md:leading-[4.4rem] animate-animateLeft' style={{ fontFamily: 'BebasNeue' }}><span className='px-2 bg-rose-900'>Welcome to</span>  Pure Hill International School</h1>
+   <h1 className='text-4xl md:text-6xl text-white uppercase my-5 mx-6 leading-[3rem] md:leading-[4.4rem] animate-pulse' style={{ fontFamily: 'BebasNeue' }}><span className='px-2'>Welcome to</span>  Pure Hill <span className='px-2 text-gray-400'>International </span>School</h1>
     <p className='text-white mx-6 animate-scaleUpCenter'>We are dedicated to building a strong academic foundation for children from creche to grade school. Our mission is to "Take the Lead" in providing an exceptional learning environment where your child can thrive and grow.</p>
       </div>
     <div className='rounded-full w-14 h-14 bg-rose-900 absolute right-1 bottom-1 grid place-items-center cursor-pointer animate-bounce' onMouseEnter={() => setHoverChats(true)} onMouseLeave={() => setHoverChats(false)} onClick={() => dispatch({type:'showChat', payload: handleShowChat = true})}>

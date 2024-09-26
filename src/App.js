@@ -5,28 +5,28 @@ import Contact from "./pages/Contact";
 import Programs from "./pages/Programs";
 import Offer from "./pages/Offer";
 import Home from "./pages/Home";
-import Form from "./components/Form";
+import Login from "./pages/Login";
+import AdminChat from "./components/AdminChat";
 import Chat from "./components/Chat";
-import DarkBackground from "./UI/DarkBackground";
+
 
 // Define initial state
 const initialState = {
   responsive: false,
   toggleMenu:false,
   showChat: false,
-  chatsInputs: '',
-  userdata:[],
+  CHATS_INPUTS: '',
+  chats:[],
+  SET_EMAIL:'',
+  SET_PASSWORD:'',
+  isLoading: false,
+  loginError:null,
 };
 
 
 // Reducer function
 function reducer(state, action) {
   switch (action.type) {
-    case 'userData' :
-      return{
-        ...state,
-        userdata: action.payload
-      }
     case 'MD' :
       return {
         ...state,
@@ -44,11 +44,45 @@ function reducer(state, action) {
       ...state,
       showChat: action.payload
     }
-    case 'UserChatInputs' :
 
-      return {
+    case 'SET_EMAIL' :
+      return{
         ...state,
-        chatsInputs: action.payload
+        SET_EMAIL: action.payload
+      }
+    case 'SET_PASSWORD' :
+      return{
+        ...state,
+        SET_PASSWORD: action.payload
+      }
+    case 'LOGIN_REQUEST' :
+      return{
+        ...state,
+        isLoading: true,
+        loginError:null,
+      }
+    case 'LOGIN_SUCCESS' :
+      return{
+        ...state,
+        isLoading: false,
+        isAuthenticated: true,
+      }
+    case 'LOGIN_FAILURE' :
+      return{
+        ...state,
+        isLoading: false,
+        isAuthenticated: false,
+        loginError: action.payload.error
+      }
+    case 'Chats' :
+      return{
+        ...state,
+        chats: action.payload
+      }
+    case 'CHATS_INPUTS' :
+      return{
+        ...state,
+        CHATS_INPUTS: action.payload
       }
     default:
       return state;
@@ -57,7 +91,7 @@ function reducer(state, action) {
 
 function App() {
   // Use the reducer and initial state
-  const [{responsive, toggleMenu, showChat, chatsInputs, userdata}, dispatch] = useReducer(reducer, initialState);
+  const [{responsive, toggleMenu, showChat, chats, CHATS_INPUTS, SET_EMAIL, SET_PASSWORD, isLoading, loginError}, dispatch] = useReducer(reducer, initialState);
   
 
   function handleShowMenu(){
@@ -92,10 +126,10 @@ function App() {
         <Route path="program" element={<Programs/>}></Route>
         <Route path="offer" element={<Offer/>}></Route>
         <Route path="contact" element={<Contact/>}></Route>
+        <Route path="phs_admin_login" element={<Login dispatch={dispatch} SET_EMAIL={SET_EMAIL} SET_PASSWORD={SET_PASSWORD} isLoading={isLoading} loginError={loginError}/>}></Route>
+        <Route path="phs_admin_chat" element={<AdminChat/>} ></Route>
       </Routes>
-      {/* <DarkBackground />
-      <Form /> */}
-     {showChat &&  <Chat dispatch={dispatch} handleShowChat={showChat} chatsInputs={chatsInputs} userdata={userdata} /> }
+     {showChat &&  <Chat dispatch={dispatch} handleShowChat={showChat} CHATS_INPUTS={CHATS_INPUTS} chats={chats} /> }
       </BrowserRouter>
     </div>
   );

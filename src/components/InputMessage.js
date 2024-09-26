@@ -1,41 +1,110 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react';
+import { doc, setDoc, updateDoc, arrayUnion, getDoc, Timestamp } from "firebase/firestore";
+import { db } from '../Firebase'; // Your Firestore setup
 
-function InputMessage({chatsInputs, dispatch, userdata}){
+function InputMessage({ CHATS_INPUTS, dispatch }) {
+const [disabled_input, setDisabledInput] = useState(false)
+const inputRef = useRef(null)
+  const generateParentId = function() {
+      let parentId = localStorage.getItem('parentId');
+  
+      if (!parentId) {
+          parentId = `parent${Date.now()}_${Math.random().toString(32).substring(2,9)}`;
+          localStorage.setItem('parentId', parentId);
+      }
+      return parentId;
+  };
+  
 
-
-  function handleKeyPress(event){
-    if(event.key === 'Enter'){
-      handleSendData()
+  useEffect(() =>{
+    inputRef.current.focus();
+  },[CHATS_INPUTS]);
+  async function handleChat_inputs() {
+    if (CHATS_INPUTS === '') return;
+  
+    let parentId = generateParentId(); 
+    
+    // Reference to the parent chat document
+    const parentDocRef = doc(db, "chats", parentId);
+    setDisabledInput(true)
+  
+    try {
+        // Use Firestore's built-in Timestamp instead of serverTimestamp() inside arrays
+        const currentTimestamp = Timestamp.now();
+  
+        // Check if the document for the parent exists
+        const docSnapshot = await getDoc(parentDocRef);
+  
+        if (docSnapshot.exists()) {
+            // Update the existing document by adding a new message
+            await updateDoc(parentDocRef, {
+                messages: arrayUnion({
+                    message: CHATS_INPUTS,
+                    timestamp: currentTimestamp, 
+                    isFromAdmin: false // Specify that the message is from the parent
+                })
+            });
+        } else {
+            // Create the document with the first message
+            await setDoc(parentDocRef, {
+                messages: [{
+                    message: CHATS_INPUTS,
+                    timestamp: currentTimestamp, 
+                    isFromAdmin: false
+                }],
+                createdAt: currentTimestamp // Optionally track when the chat was created
+            });
+        }
+        dispatch({ type: 'CHATS_INPUTS', payload: CHATS_INPUTS = '' });
+        setDisabledInput(false);
+        console.log('Message delivered');
+    } catch (err) {
+        console.log('Error sending message:', err);
+  
+        // Handle specific error for offline mode
+        if (err.message.includes('Failed to get document because the client is offline')) {
+            alert('FirebaseError: The client is offline, please check your internet connection.');
+        } else {
+            console.log('An unexpected error occurred:', err.message);
+        }
+  
+        // Optionally, re-enable input if there was an error
+        setDisabledInput(false);
     }
   }
-  document.addEventListener('keypress', handleKeyPress);
-
-  function handleSendData(){
-    const newMessage = {
-      text: chatsInputs,
-      time: new Date().toString(),
-    };
-
-    
+  
 
 
-    const updateduserdata = [...userdata, newMessage];
-    localStorage.setItem('userData', JSON.stringify(updateduserdata))
-    dispatch({
-      type:'userData',
-      payload:  updateduserdata
-    })
-    dispatch({
-      type:'UserChatInputs',
-      payload:  ''
-    })
-  }
-    return(
-      <div className='flex flex-row justify-between items-center w-full'>
-        <input type='text' name='text' className=' border-rose-900 border-4 w-60 h-10 text-rose-900 rounded-full outline-none py-1 px-3 ml-3 outline-white bg-gray-50' value={chatsInputs} onChange={(e) => dispatch({type:'UserChatInputs', payload:e.target.value})}/>
-        <button className='bg-white  text-rose-900 py-1  px-2 rounded-md hover:bg-rose-600 hover:text-white transition-colors duration-300 focus:outline-none focus:ring focus:ring-rose-600 focus:ring-offset-2 focus:bg-rose-600 focus:text-white' onClick={handleSendData}>Send</button>
-      </div>
-    )
-  }
 
-export default InputMessage
+
+  useEffect(() =>{
+    function handleKeypress(event){
+      if(event.code === 'Enter')handleChat_inputs();
+      else return;
+    }
+  
+    document.addEventListener('keypress', handleKeypress)
+    return () => document.removeEventListener('keypress', handleKeypress)
+  },[CHATS_INPUTS]);
+
+
+
+
+
+  return (
+    <div className='flex flex-row justify-between items-center w-full'>
+      <input 
+        type='text' 
+        name='text' 
+        className='border-rose-900 border-4 w-60 h-10 text-rose-900 rounded-full outline-none py-1 px-3 ml-3 outline-white bg-gray-50' 
+        value={CHATS_INPUTS} 
+        disabled={disabled_input}
+        ref={inputRef}
+        onChange={(e) => dispatch({ type: 'CHATS_INPUTS', payload: e.target.value })}
+      />
+      <button className='bg-white text-rose-900 py-1 px-2 rounded-md hover:bg-rose-600 hover:text-white transition-colors duration-300 focus:outline-none focus:ring focus:ring-rose-600 focus:ring-offset-2 focus:bg-rose-600 focus:text-white text-xs' onClick={handleChat_inputs}>{disabled_input ? 'Sending message' : 'Send'}</button>
+    </div>
+  );
+}
+
+export default InputMessage;
