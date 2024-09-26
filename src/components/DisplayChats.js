@@ -4,13 +4,14 @@ import { db } from '../Firebase'; // Make sure to import your Firestore instance
 
 function DisplayChats({CHATS_INPUTS}) {
   const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
 
   const parentId = localStorage.getItem('parentId');
   useEffect(() => {
-   // Fetch the chat document based on the parentId (used as the document ID)
-   const fetchChats = async () => {
+    // Fetch the chat document based on the parentId (used as the document ID)
+    const fetchChats = async () => {
+     setLoading(true);
     try {
       const parentDocRef = doc(db, 'chats', parentId); // Get reference to the document using parentId
       const docSnapshot = await getDoc(parentDocRef);
