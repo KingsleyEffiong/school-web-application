@@ -46,7 +46,7 @@ function DisplayChats({ updateChat, internetError, dispatch }) {
   }
 
   return (
-    <div className={`flex flex-col gap-2 py-9 px-2 h-[300px] overflow-auto`}>
+    <div className={`flex flex-col gap-2 py-9 px-2 h-[200px] overflow-auto`}>
       {chats.length > 0 ? (
         chats.map((chat, index) => (
           <div key={index} className='flex flex-col'>
