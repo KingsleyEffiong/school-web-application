@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { doc, setDoc, updateDoc, arrayUnion, getDoc, Timestamp } from "firebase/firestore";
 import { db } from '../Firebase'; // Your Firestore setup
 
-function InputMessage({ CHATS_INPUTS, dispatch }) {
+function InputMessage({ CHATS_INPUTS, dispatch, updateChat }) {
 const [disabled_input, setDisabledInput] = useState(false)
 const inputRef = useRef(null)
   const generateParentId = function() {
@@ -19,9 +19,12 @@ const inputRef = useRef(null)
   useEffect(() =>{
     inputRef.current.focus();
   },[CHATS_INPUTS]);
+
+  
   async function handleChat_inputs() {
     if (CHATS_INPUTS === '') return;
   
+
     let parentId = generateParentId(); 
     
     // Reference to the parent chat document
@@ -57,6 +60,7 @@ const inputRef = useRef(null)
         }
         dispatch({ type: 'CHATS_INPUTS', payload: CHATS_INPUTS = '' });
         setDisabledInput(false);
+        console.log(updateChat)
         console.log('Message delivered');
     } catch (err) {
         console.log('Error sending message:', err);
@@ -67,16 +71,15 @@ const inputRef = useRef(null)
         } else {
             console.log('An unexpected error occurred:', err.message);
         }
-  
         // Optionally, re-enable input if there was an error
         setDisabledInput(false);
+   
+    }
+    finally{
+      dispatch({type:'update_chat', payload: updateChat === false ? !updateChat : false});
     }
   }
   
-
-
-
-
   useEffect(() =>{
     function handleKeypress(event){
       if(event.code === 'Enter')handleChat_inputs();
@@ -86,9 +89,6 @@ const inputRef = useRef(null)
     document.addEventListener('keypress', handleKeypress)
     return () => document.removeEventListener('keypress', handleKeypress)
   },[CHATS_INPUTS]);
-
-
-
 
 
   return (

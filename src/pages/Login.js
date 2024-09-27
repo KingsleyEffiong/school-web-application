@@ -1,7 +1,23 @@
 import React from 'react';
+import { auth } from '../Firebase'; 
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
-function Form({ dispatch, SET_EMAIL, SET_PASSWORD, isLoading, loginError,handleLogin }) {
-
+function Form({ dispatch, SET_EMAIL, SET_PASSWORD, isLoading, loginError, }) {
+  const navigate = useNavigate(); // Initialize useNavigate hook
+  async function handleLogin() {
+    dispatch({ type: 'LOGIN_REQUEST', payload: { isLoading: true } });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, SET_EMAIL, SET_PASSWORD);
+      console.log(userCredential);
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: userCredential.user } });
+      navigate('/phs_admin_chat');
+      
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: 'LOGIN_FAILURE', payload: { loginError: error.message } });
+    }
+  }
 
   return (
     <div className='w-[40rem] h-auto bg-rose-900 shadow-lg absolute z-30 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded'>

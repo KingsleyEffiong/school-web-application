@@ -21,6 +21,8 @@ const initialState = {
   SET_PASSWORD:'',
   isLoading: false,
   loginError:null,
+  updateChat:false,
+  internetError:null,
 };
 
 
@@ -79,10 +81,21 @@ function reducer(state, action) {
         ...state,
         chats: action.payload
       }
+    
     case 'CHATS_INPUTS' :
       return{
         ...state,
         CHATS_INPUTS: action.payload
+      }
+    case 'update_chat' :
+      return{
+        ...state,
+        updateChat: action.payload
+      }
+    case 'INTERNET_FAILURE' :
+      return{
+        ...state,
+        internetError: action.payload.err
       }
     default:
       return state;
@@ -91,7 +104,7 @@ function reducer(state, action) {
 
 function App() {
   // Use the reducer and initial state
-  const [{responsive, toggleMenu, showChat, chats, CHATS_INPUTS, SET_EMAIL, SET_PASSWORD, isLoading, loginError}, dispatch] = useReducer(reducer, initialState);
+  const [{responsive, toggleMenu, showChat, chats, CHATS_INPUTS, SET_EMAIL, SET_PASSWORD, isLoading, loginError, updateChat, internetError}, dispatch] = useReducer(reducer, initialState);
   
 
   function handleShowMenu(){
@@ -129,7 +142,7 @@ function App() {
         <Route path="phs_admin_login" element={<Login dispatch={dispatch} SET_EMAIL={SET_EMAIL} SET_PASSWORD={SET_PASSWORD} isLoading={isLoading} loginError={loginError}/>}></Route>
         <Route path="phs_admin_chat" element={<AdminChat/>} ></Route>
       </Routes>
-     {showChat &&  <Chat dispatch={dispatch} handleShowChat={showChat} CHATS_INPUTS={CHATS_INPUTS} chats={chats} /> }
+     {showChat &&  <Chat dispatch={dispatch} handleShowChat={showChat} CHATS_INPUTS={CHATS_INPUTS} chats={chats}  updateChat={updateChat} internetError={internetError}/> }
       </BrowserRouter>
     </div>
   );
