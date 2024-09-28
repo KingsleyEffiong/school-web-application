@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { MdPerson } from 'react-icons/md';
 import { getDocs, collection } from 'firebase/firestore';
-import { db } from '../Firebase'; // Your Firestore instance
-import EachChat from './EachChat';
+import { db } from '../../Firebase'; // Your Firestore instance
+import DisplayAdminChat from './DiaplayAdminChats';
 
 function AdminChat() {
   const [userChats, setUserChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null); // State to track the selected chat
+  const [loadingChat, setLoadingChat] = useState(false)
 
   useEffect(() => {
     async function fetchLatestChats() {
+      setLoadingChat(true);
       try {
         // Fetch all documents from the 'chats' collection
         const querySnapshot = await getDocs(collection(db, 'chats'));
@@ -29,16 +31,26 @@ function AdminChat() {
       } catch (err) {
         console.error('Error fetching user chats:', err);
       }
+      finally{
+        setLoadingChat(false);
+      }
     }
 
     fetchLatestChats();
-  }, []); // Run once on component mount
+  }, []); 
 
-  // Handle chat selection (clicking on a user chat)
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId); // Set the selected chat ID
   };
 
+  if(loadingChat) {
+    return(
+      <div className="flex items-center justify-center h-screen">
+      <h2 className="text-lg">Loading Chat...</h2>
+    </div>
+    )
+  }
+ 
   return (
     <div className="w-full md:w-[70%] h-[900px] mt-32 mx-auto py-10">
       <nav className='bg-rose-700 w-fit h-16 flex flex-row justify-between items-center shadow-lg px-3'>
@@ -54,7 +66,7 @@ function AdminChat() {
                 <div className='flex flex-row bg-white px-3 py-4 md:w-96 items-center rounded-lg cursor-pointer shadow-lg'>
                   <MdPerson className='text-5xl bg-rose-700 rounded-full text-white mx-2' />
                   <div className='flex flex-col'>
-                    <h3>{chat.lastMessage.isFromAdmin ? 'Admin' : `User ID: ${chat.id}`}</h3>
+                    <h3>{chat.lastMessage.isFromAdmin ? 'Admin' : chat.id}</h3>
                     <h3>{chat.lastMessage.message}</h3>
                     <span className='text-xs text-gray-500'>
                       {new Date(chat.lastMessage.timestamp.seconds * 1000).toLocaleString()}
@@ -71,8 +83,8 @@ function AdminChat() {
         )}
       </main>
 
-      {/* Render the EachChat component conditionally, based on selected chat */}
-      {selectedChatId && <EachChat parentId={selectedChatId} />}
+      {/* Render the DisplayAdminChat component conditionally, based on selected chat */}
+      {selectedChatId && <DisplayAdminChat parentId={selectedChatId} />}
     </div>
   );
 }

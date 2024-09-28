@@ -1,8 +1,8 @@
 // The EachChat component is unchanged from the previous implementation
 import React, { useEffect, useRef, useState } from 'react';
 import { doc, updateDoc, arrayUnion, getDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../Firebase'; // Your Firestore instance
-import DarkBackground from '../UI/DarkBackground';
+import { db } from '../../Firebase'; // Your Firestore instance
+import DarkBackground from '../../UI/DarkBackground';
 
 function EachChat({ parentId }) {
   const [chatMessages, setChatMessages] = useState([]);
@@ -62,7 +62,7 @@ function EachChat({ parentId }) {
 
   return (
     <>
-    <div className='flex flex-col gap-2  py-9 px-2 h-auto w-96 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-auto z-30 bg-white' ref={chatContainerRef}>
+    <div className='flex flex-col gap-2  py-9 px-2 w-96 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-auto h-[500px] z-30 bg-white' ref={chatContainerRef}>
       {chatMessages.length > 0 ? (
         chatMessages.map((msg, index) => (
           <div key={index} className='flex flex-col'>

@@ -1,30 +1,31 @@
 import Navbar from "./components/Navbar";
-import React, { useEffect, useReducer} from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { auth } from './Firebase'; // Import your Firebase auth
+import { onAuthStateChanged } from 'firebase/auth'; // Import the method
 import Contact from "./pages/Contact";
 import Programs from "./pages/Programs";
 import Offer from "./pages/Offer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import AdminChat from "./components/AdminChat";
-import Chat from "./components/Chat";
-
+import AdminChat from "./components/Admin/AdminChat";
+import UserChat from "./components/User/UserChat";
 
 // Define initial state
 const initialState = {
   responsive: false,
-  toggleMenu:false,
+  toggleMenu: false,
   showChat: false,
   CHATS_INPUTS: '',
-  chats:[],
-  SET_EMAIL:'',
-  SET_PASSWORD:'',
+  SET_EMAIL: '',
+  SET_PASSWORD: '',
   isLoading: false,
-  loginError:null,
-  updateChat:false,
-  internetError:null,
+  loginError: null,
+  updateChat: false,
+  internetError: null,
+  isAuthenticated: false,
+  checkingAuth: true,
 };
-
 
 // Reducer function
 function reducer(state, action) {
@@ -63,30 +64,33 @@ function reducer(state, action) {
         isLoading: true,
         loginError:null,
       }
-    case 'LOGIN_SUCCESS' :
-      return{
-        ...state,
-        isLoading: false,
-        isAuthenticated: true,
-      }
-    case 'LOGIN_FAILURE' :
-      return{
-        ...state,
-        isLoading: false,
-        isAuthenticated: false,
-        loginError: action.payload.error
-      }
-    case 'Chats' :
-      return{
-        ...state,
-        chats: action.payload
-      }
-    
+      case 'CHECKING_AUTH':
+        return {
+          ...state,
+          checkingAuth: action.payload,
+        };
+  
+      case 'LOGIN_SUCCESS':
+        return {
+          ...state,
+          isLoading: false,
+          isAuthenticated: true,
+          checkingAuth: false, // Set to false once checked
+        };
+      case 'LOGIN_FAILURE':
+        return {
+          ...state,
+          isLoading: false,
+          isAuthenticated: false,
+          checkingAuth: false, // Set to false once checked
+          loginError: action.payload.error,
+        };
     case 'CHATS_INPUTS' :
       return{
         ...state,
         CHATS_INPUTS: action.payload
       }
+      
     case 'update_chat' :
       return{
         ...state,
@@ -103,24 +107,39 @@ function reducer(state, action) {
 }
 
 function App() {
-  // Use the reducer and initial state
-  const [{responsive, toggleMenu, showChat, chats, CHATS_INPUTS, SET_EMAIL, SET_PASSWORD, isLoading, loginError, updateChat, internetError}, dispatch] = useReducer(reducer, initialState);
-  
 
-  function handleShowMenu(){
-    dispatch({type:'Menu', payload: !toggleMenu})
+  // Use the reducer and initial state
+  const [{ responsive, toggleMenu, showChat, CHATS_INPUTS, SET_EMAIL, SET_PASSWORD, isAuthenticated, isLoading, loginError, updateChat, internetError, checkingAuth }, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      dispatch({ type: 'CHECKING_AUTH', payload: false }); // Indicate that checking is complete
+
+      if (user) {
+        dispatch({ type: 'LOGIN_SUCCESS' });
+      } else {
+        dispatch({ type: 'LOGIN_FAILURE', payload: { error: null } });
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  function handleShowMenu() {
+    dispatch({ type: 'Menu', payload: !toggleMenu });
   }
-  function handleCloseMenu(){
-    dispatch({type:'Menu', payload: !toggleMenu});
+
+  function handleCloseMenu() {
+    dispatch({ type: 'Menu', payload: !toggleMenu });
   }
+
   useEffect(() => {
     const handleResize = () => {
       dispatch({
         type: 'MD',
         payload: window.innerWidth <= 954,
       });
-      if(window.innerWidth >= 954){
-        dispatch({type:'Menu', payload: toggleMenu});
+      if (window.innerWidth >= 954) {
+        dispatch({ type: 'Menu', payload: toggleMenu });
       }
     };
     window.addEventListener('resize', handleResize);
@@ -132,20 +151,59 @@ function App() {
 
   return (
     <div className="bg-gray-200 w-full">
-      <BrowserRouter>
-      <Navbar responsive={responsive} handleShowMenu={handleShowMenu} toggleMenu={toggleMenu} handleCloseMenu={handleCloseMenu}/>
-      <Routes>
-        <Route path="/" element={<Home dispatch={dispatch} handleShowChat={showChat}/>}></Route>
-        <Route path="program" element={<Programs/>}></Route>
-        <Route path="offer" element={<Offer/>}></Route>
-        <Route path="contact" element={<Contact/>}></Route>
-        <Route path="phs_admin_login" element={<Login dispatch={dispatch} SET_EMAIL={SET_EMAIL} SET_PASSWORD={SET_PASSWORD} isLoading={isLoading} loginError={loginError}/>}></Route>
-        <Route path="phs_admin_chat" element={<AdminChat/>} ></Route>
-      </Routes>
-     {showChat &&  <Chat dispatch={dispatch} handleShowChat={showChat} CHATS_INPUTS={CHATS_INPUTS} chats={chats}  updateChat={updateChat} internetError={internetError}/> }
-      </BrowserRouter>
+ <BrowserRouter>
+  <Navbar responsive={responsive} handleShowMenu={handleShowMenu} toggleMenu={toggleMenu} handleCloseMenu={handleCloseMenu} />
+
+  <Routes>
+    <Route path="/" element={<Home dispatch={dispatch} handleShowChat={showChat} />} />
+    <Route path="program" element={<Programs />} />
+    <Route path="offer" element={<Offer />} />
+    <Route path="contact" element={<Contact />} />
+    <Route
+      path="phs_admin_login"
+      element={
+        <Login
+          dispatch={dispatch}
+          SET_EMAIL={SET_EMAIL}
+          SET_PASSWORD={SET_PASSWORD}
+          isLoading={isLoading}
+          loginError={loginError}
+        />
+      }
+    />
+    <Route
+      path="phs_admin_chat"
+      element={
+        checkingAuth ? (
+          <div className="flex items-center justify-center h-screen">
+            <h2 className="text-lg">Checking Authentication...</h2>
+          </div>
+        ) : isAuthenticated ? (
+          <AdminChat />
+        ) : (
+          <Login
+            dispatch={dispatch}
+            SET_EMAIL={SET_EMAIL}
+            SET_PASSWORD={SET_PASSWORD}
+            isLoading={isLoading}
+            loginError={loginError}
+          />
+        )
+      }
+    />
+  </Routes>
+
+  {showChat && (
+    <UserChat
+      dispatch={dispatch}
+      handleShowChat={showChat}
+      CHATS_INPUTS={CHATS_INPUTS}
+      updateChat={updateChat}
+      internetError={internetError}
+    />
+  )}
+</BrowserRouter>
     </div>
   );
 }
-
 export default App;

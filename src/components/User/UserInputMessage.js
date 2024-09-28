@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { doc, setDoc, updateDoc, arrayUnion, getDoc, Timestamp } from "firebase/firestore";
-import { db } from '../Firebase'; // Your Firestore setup
+import { db } from '../../Firebase'; // Your Firestore setup
 
 function InputMessage({ CHATS_INPUTS, dispatch, updateChat }) {
-const [disabled_input, setDisabledInput] = useState(false)
+const [disabled_input, setDisabledInput] = useState(false);
+const [networkMessage, setNetworkMessage] = useState(false)
 const inputRef = useRef(null)
   const generateParentId = function() {
       let parentId = localStorage.getItem('parentId');
@@ -32,7 +33,6 @@ const inputRef = useRef(null)
     setDisabledInput(true)
   
     try {
-        // Use Firestore's built-in Timestamp instead of serverTimestamp() inside arrays
         const currentTimestamp = Timestamp.now();
   
         // Check if the document for the parent exists
@@ -60,20 +60,15 @@ const inputRef = useRef(null)
         }
         dispatch({ type: 'CHATS_INPUTS', payload: CHATS_INPUTS = '' });
         setDisabledInput(false);
-        console.log(updateChat)
         console.log('Message delivered');
     } catch (err) {
         console.log('Error sending message:', err);
-  
-        // Handle specific error for offline mode
         if (err.message.includes('Failed to get document because the client is offline')) {
-            alert('FirebaseError: The client is offline, please check your internet connection.');
+            setNetworkMessage(true);
         } else {
             console.log('An unexpected error occurred:', err.message);
         }
-        // Optionally, re-enable input if there was an error
         setDisabledInput(false);
-   
     }
     finally{
       dispatch({type:'update_chat', payload: updateChat === false ? !updateChat : false});
@@ -90,6 +85,9 @@ const inputRef = useRef(null)
     return () => document.removeEventListener('keypress', handleKeypress)
   },[CHATS_INPUTS]);
 
+  if(networkMessage){
+    return <div className='text-rose-700'>Network Error: Please check your internet connection..</div>
+  }
 
   return (
     <div className='flex flex-row justify-between items-center w-full'>

@@ -1,7 +1,7 @@
-import React, { useReducer } from 'react'
+import React from 'react'
 import { MdArrowBack } from 'react-icons/md'
-import InputMessage from './InputMessage'
-import DisplayChats from './DisplayChats'
+import UserInputMessage from './UserInputMessage'
+import DisplayUserChat from './DisplayUserChats'
 
 function Chat({dispatch, handleShowChat, CHATS_INPUTS, chats, updateChat, internetError}) {
 
@@ -18,8 +18,8 @@ function Chat({dispatch, handleShowChat, CHATS_INPUTS, chats, updateChat, intern
           <div className='my-4'>
         <span className='rounded-full bg-rose-900 shadow-lg w-fit px-3 py-2 text-white text-xs ml-40% max-w-56'>Welcome to pure hill school, how can we be of assitance</span>
           </div>
-          <DisplayChats dispatch={dispatch} userdata={chats} CHATS_INPUTS={CHATS_INPUTS} updateChat={updateChat} internetError={internetError}/>
-          <InputMessage CHATS_INPUTS={CHATS_INPUTS} dispatch={dispatch} chats={chats} updateChat={updateChat}/>
+          <DisplayUserChat dispatch={dispatch} userdata={chats} CHATS_INPUTS={CHATS_INPUTS} updateChat={updateChat} internetError={internetError}/>
+          <UserInputMessage CHATS_INPUTS={CHATS_INPUTS} dispatch={dispatch} chats={chats} updateChat={updateChat}/>
         </main>
     </div>
   )
