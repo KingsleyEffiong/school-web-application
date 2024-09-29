@@ -16,7 +16,7 @@ function Chat({dispatch, handleShowChat, CHATS_INPUTS, chats, updateChat, intern
         </nav>
         <main className='p-3'>
           <div className='my-4'>
-        <span className='rounded-full bg-rose-900 shadow-lg w-fit px-3 py-2 text-white text-xs ml-40% max-w-56'>Welcome to pure hill school, how can we be of assitance</span>
+        <span className='rounded-full bg-rose-900 shadow-lg w-fit px-3 py-2 text-white text-xs ml-40% max-w-56'>Welcome to pure hill school</span>
           </div>
           <DisplayUserChat dispatch={dispatch} userdata={chats} CHATS_INPUTS={CHATS_INPUTS} updateChat={updateChat} internetError={internetError}/>
           <UserInputMessage CHATS_INPUTS={CHATS_INPUTS} dispatch={dispatch} chats={chats} updateChat={updateChat}/>

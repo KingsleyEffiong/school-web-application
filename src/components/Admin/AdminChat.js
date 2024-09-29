@@ -4,7 +4,7 @@ import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../../Firebase'; // Your Firestore instance
 import DisplayAdminChat from './DiaplayAdminChats';
 
-function AdminChat({updateChat, dispatch}) {
+function AdminChat({ updateChat, dispatch }) {
   const [userChats, setUserChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null); // State to track the selected chat
   const [loadingChat, setLoadingChat] = useState(true); // Initial loading state for the first fetch
@@ -51,37 +51,46 @@ function AdminChat({updateChat, dispatch}) {
     return () => clearInterval(intervalId);
   }, []); // Empty dependency array to run this only once on mount
 
-
-  
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId); // Set the selected chat ID
   };
 
-  if(loadingChat) {
-    return(
+  // Count how many chats the admin has not answered
+  const unansweredChatsCount = userChats.filter(chat => chat.lastMessage && !chat.lastMessage.isFromAdmin).length;
+
+  if (loadingChat) {
+    return (
       <div className="flex items-center justify-center h-screen">
-      <h2 className="text-lg">Loading Chat...</h2>
-    </div>
-    )
+        <h2 className="text-lg">Loading Chat...</h2>
+      </div>
+    );
   }
- 
+
   return (
     <div className="w-full md:w-[70%] h-[900px] mt-32 mx-auto py-10">
       <nav className='bg-rose-700 w-fit h-16 flex flex-row justify-between items-center shadow-lg px-3'>
         <div className='flex flex-col justify-center items-start'>
           <h2 className='text-base text-white px-2'>Messages</h2>
+          <span className='text-sm text-gray-200'>{`Unanswered Chats: ${unansweredChatsCount}`}</span>
         </div>
       </nav>
       <main className='w-full px-3 py-3 flex flex-col gap-3'>
         {userChats.length > 0 ? (
           userChats.map((chat) => (
-            <div key={chat.id} className='mb-5' onClick={() => handleChatClick(chat.id)}>
+            <div key={chat.id} className='mb-5 max:w-[250px] min:w-[250px]' onClick={() => handleChatClick(chat.id)}>
               {chat.lastMessage ? (
-                <div className='flex flex-row bg-white px-3 py-4 md:w-96 items-center rounded-lg cursor-pointer shadow-lg'>
+                <div className='flex flex-row bg-white px-3 py-4 md:w-96 items-center rounded-lg cursor-pointer shadow-lg relative'>
+                  {/* Badge for unanswered messages */}
+                  {!chat.lastMessage.isFromAdmin && (
+                    <div className="w-3rem h-3rem rounded-full absolute top-[-15px] right-0 bg-red-900 text-white px-2 py-1">
+                      No reply yet
+                    </div>
+                  )}
                   <MdPerson className='text-5xl bg-rose-700 rounded-full text-white mx-2' />
                   <div className='flex flex-col'>
                     <h3>{chat.lastMessage.isFromAdmin ? 'Admin' : chat.id}</h3>
-                    <h3>{chat.lastMessage.message}</h3>
+                    <h3>{chat.lastMessage.message.length > 12 ? `${chat.lastMessage.message.slice(0, 12)}...` : chat.lastMessage.message}</h3>
+
                     <span className='text-xs text-gray-500'>
                       {new Date(chat.lastMessage.timestamp.seconds * 1000).toLocaleString()}
                     </span>
@@ -98,9 +107,14 @@ function AdminChat({updateChat, dispatch}) {
       </main>
 
       {/* Render the DisplayAdminChat component conditionally, based on selected chat */}
-      {selectedChatId  ? (<DisplayAdminChat parentId={selectedChatId} setSelectedChatId={setSelectedChatId} updateChat={updateChat} dispatch={dispatch}/>
-     ):
-      null}
+      {selectedChatId ? (
+        <DisplayAdminChat
+          parentId={selectedChatId}
+          setSelectedChatId={setSelectedChatId}
+          updateChat={updateChat}
+          dispatch={dispatch}
+        />
+      ) : null}
     </div>
   );
 }

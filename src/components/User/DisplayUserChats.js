@@ -50,7 +50,7 @@ function DisplayChats({ updateChat, internetError, dispatch }) {
   
 
   if(networkError){
-    return <div className='text-rose-700'>Network Error: Please check your internet connection..</div>
+    return <div className='text-rose-700'>Network Error: Please check your internet connection and refresh the page.....</div>
   }
 
   return (
