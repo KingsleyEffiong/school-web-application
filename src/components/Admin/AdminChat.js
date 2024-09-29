@@ -84,7 +84,9 @@ function AdminChat() {
       </main>
 
       {/* Render the DisplayAdminChat component conditionally, based on selected chat */}
-      {selectedChatId && <DisplayAdminChat parentId={selectedChatId} />}
+      {selectedChatId  ? (<DisplayAdminChat parentId={selectedChatId} setSelectedChatId={setSelectedChatId}/>
+     ):
+      null}
     </div>
   );
 }

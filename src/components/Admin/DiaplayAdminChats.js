@@ -4,7 +4,7 @@ import { doc, updateDoc, arrayUnion, getDoc, Timestamp } from 'firebase/firestor
 import { db } from '../../Firebase'; // Your Firestore instance
 import DarkBackground from '../../UI/DarkBackground';
 
-function EachChat({ parentId }) {
+function DisplayAdminChat({ parentId, setSelectedChatId }) {
   const [chatMessages, setChatMessages] = useState([]);
   const [adminMessage, setAdminMessage] = useState('');
   const chatContainerRef = useRef(null);
@@ -62,7 +62,7 @@ function EachChat({ parentId }) {
 
   return (
     <>
-    <div className='flex flex-col gap-2  py-9 px-2 w-96 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-auto h-[500px] z-30 bg-white' ref={chatContainerRef}>
+    <div className='flex flex-col gap-2  py-9 px-4 w-[22rem] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-auto h-[500px] z-30 bg-white rounded-2xl' ref={chatContainerRef}>
       {chatMessages.length > 0 ? (
         chatMessages.map((msg, index) => (
           <div key={index} className='flex flex-col'>
@@ -92,9 +92,9 @@ function EachChat({ parentId }) {
         </button>
       </div>
     </div>
-    <DarkBackground />
+    <DarkBackground closeSelectedChatId={setSelectedChatId}/>
     </>
   );
 }
 
-export default EachChat;
+export default DisplayAdminChat;
