@@ -71,7 +71,8 @@ const inputRef = useRef(null)
         setDisabledInput(false);
     }
     finally{
-      dispatch({type:'update_chat', payload: updateChat === false ? !updateChat : false});
+      dispatch({type:'update_chat', payload: updateChat === false ? updateChat = true : updateChat =  false});
+      console.log(updateChat)
     }
   }
   

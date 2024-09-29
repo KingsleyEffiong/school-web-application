@@ -5,7 +5,6 @@ import { db } from '../../Firebase'; // Make sure to import your Firestore insta
 function DisplayChats({ updateChat, internetError, dispatch }) {
   const [chats, setChats] = useState([]);
   const [networkError, setNetworkError] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
   const parentId = localStorage.getItem('parentId');
 
 

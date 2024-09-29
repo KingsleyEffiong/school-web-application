@@ -4,41 +4,55 @@ import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../../Firebase'; // Your Firestore instance
 import DisplayAdminChat from './DiaplayAdminChats';
 
-function AdminChat() {
+function AdminChat({updateChat, dispatch}) {
   const [userChats, setUserChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null); // State to track the selected chat
-  const [loadingChat, setLoadingChat] = useState(false)
+  const [loadingChat, setLoadingChat] = useState(true); // Initial loading state for the first fetch
+
+  // Fetch chats from Firestore
+  const fetchLatestChats = async (showLoading = false) => {
+    // Show loading only for the initial load
+    if (showLoading) setLoadingChat(true);
+    
+    try {
+      // Fetch all documents from the 'chats' collection
+      const querySnapshot = await getDocs(collection(db, 'chats'));
+
+      const chats = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        const lastMessage = data.messages[data.messages.length - 1]; // Get only the last message
+
+        return {
+          id: doc.id, // parent chat ID (document ID)
+          lastMessage, // Only the last message
+          createdAt: data.createdAt, // Optionally keep track of when the chat was created
+        };
+      });
+
+      setUserChats(chats); // Set the latest chats in the state
+    } catch (err) {
+      console.error('Error fetching user chats:', err);
+    } finally {
+      // Only set loading to false after the initial fetch
+      if (showLoading) setLoadingChat(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchLatestChats() {
-      setLoadingChat(true);
-      try {
-        // Fetch all documents from the 'chats' collection
-        const querySnapshot = await getDocs(collection(db, 'chats'));
-        
-        const chats = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          const lastMessage = data.messages[data.messages.length - 1]; // Get only the last message
-          
-          return {
-            id: doc.id, // parent chat ID (document ID)
-            lastMessage, // Only the last message
-            createdAt: data.createdAt // Optionally keep track of when the chat was created
-          };
-        });
-        
-        setUserChats(chats); // Set the latest chats in the state
-      } catch (err) {
-        console.error('Error fetching user chats:', err);
-      }
-      finally{
-        setLoadingChat(false);
-      }
-    }
+    // Fetch chats on initial mount (with loading)
+    fetchLatestChats(true);
 
-    fetchLatestChats();
-  }, []); 
+    // Set up an interval to silently fetch chats every second (without loading)
+    const intervalId = setInterval(() => {
+      fetchLatestChats(false); // No loading for background updates
+    }, 1000); // 1000ms = 1 second
 
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array to run this only once on mount
+
+
+  
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId); // Set the selected chat ID
   };
@@ -84,7 +98,7 @@ function AdminChat() {
       </main>
 
       {/* Render the DisplayAdminChat component conditionally, based on selected chat */}
-      {selectedChatId  ? (<DisplayAdminChat parentId={selectedChatId} setSelectedChatId={setSelectedChatId}/>
+      {selectedChatId  ? (<DisplayAdminChat parentId={selectedChatId} setSelectedChatId={setSelectedChatId} updateChat={updateChat} dispatch={dispatch}/>
      ):
       null}
     </div>

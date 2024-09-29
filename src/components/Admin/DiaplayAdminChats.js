@@ -4,7 +4,7 @@ import { doc, updateDoc, arrayUnion, getDoc, Timestamp } from 'firebase/firestor
 import { db } from '../../Firebase'; // Your Firestore instance
 import DarkBackground from '../../UI/DarkBackground';
 
-function DisplayAdminChat({ parentId, setSelectedChatId }) {
+function DisplayAdminChat({ parentId, setSelectedChatId, updateChat }) {
   const [chatMessages, setChatMessages] = useState([]);
   const [adminMessage, setAdminMessage] = useState('');
   const chatContainerRef = useRef(null);
@@ -23,16 +23,44 @@ function DisplayAdminChat({ parentId, setSelectedChatId }) {
         console.error('Error fetching chat:', error);
       }
     }
-
+  
+    // Fetch chat messages immediately when parentId changes
     fetchChatMessages();
-  }, [parentId]);
-
-  // Auto-scroll to the latest message
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  
+    // Only set interval if updateChat is true
+    let intervalId;
+    if (updateChat) {
+      intervalId = setInterval(() => {
+        fetchChatMessages(); // Fetch chat messages in the background
+      }, 1000); // Run every second
     }
+  
+    // Cleanup the interval when updateChat becomes false or the component unmounts
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  
+  }, [parentId, updateChat]); // Dependency array includes parentId and updateChat
+  
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+  
+    // Function to determine if the user is at the bottom of the chat
+    const isUserNearBottom = () => {
+      return (
+        chatContainer &&
+        chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 50
+      );
+    };
+  
+    // Auto-scroll only if the user is near the bottom
+    if (isUserNearBottom()) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  
   }, [chatMessages]);
+  
 
   // Function to handle sending an admin message
   const sendMessage = async () => {
@@ -60,6 +88,16 @@ function DisplayAdminChat({ parentId, setSelectedChatId }) {
     }
   };
 
+
+  useEffect(() =>{
+    function handleKeypress(event){
+      if(event.code === 'Enter')sendMessage();
+      else return;
+    }
+  
+    document.addEventListener('keypress', handleKeypress)
+    return () => document.removeEventListener('keypress', handleKeypress)
+  },[sendMessage]);
   return (
     <>
     <div className='flex flex-col gap-2  py-9 px-4 w-[22rem] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-auto h-[500px] z-30 bg-white rounded-2xl' ref={chatContainerRef}>
