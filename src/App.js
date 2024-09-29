@@ -61,7 +61,7 @@ function reducer(state, action) {
     case 'LOGIN_REQUEST' :
       return{
         ...state,
-        isLoading: true,
+        isLoading: action.payload.isLoading,
         loginError:null,
       }
       case 'CHECKING_AUTH':

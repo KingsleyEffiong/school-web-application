@@ -13,11 +13,11 @@ function Form({ dispatch, SET_EMAIL, SET_PASSWORD, isLoading, loginError, }) {
       console.log(userCredential);
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user: userCredential.user } });
       navigate('/phs_admin_chat');
-      console.log('Loading sucess')
+
     } catch (error) {
-      console.error(error);
-      console.log('Loading Failed')
+      console.log(error);
       dispatch({ type: 'LOGIN_FAILURE', payload: { loginError: error.message } });
+      dispatch({ type: 'LOGIN_REQUEST', payload: { isLoading: false } });
     }
     finally{
       dispatch({ type: 'LOGIN_REQUEST', payload: { isLoading: false } });
