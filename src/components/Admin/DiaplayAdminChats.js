@@ -4,7 +4,7 @@ import { doc, updateDoc, arrayUnion, getDoc, Timestamp } from 'firebase/firestor
 import { db } from '../../Firebase'; // Your Firestore instance
 import DarkBackground from '../../UI/DarkBackground';
 
-function DisplayAdminChat({ parentId, setSelectedChatId, updateChat }) {
+function DisplayAdminChat({ parentId, setSelectedChatId, updateChat}) {
   const [chatMessages, setChatMessages] = useState([]);
   const [adminMessage, setAdminMessage] = useState('');
   const chatContainerRef = useRef(null);

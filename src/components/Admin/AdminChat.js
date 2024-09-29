@@ -4,7 +4,7 @@ import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../../Firebase'; // Your Firestore instance
 import DisplayAdminChat from './DiaplayAdminChats';
 
-function AdminChat({ updateChat, dispatch }) {
+function AdminChat({ updateChat, dispatch, CHATS_INPUTS }) {
   const [userChats, setUserChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null); // State to track the selected chat
   const [loadingChat, setLoadingChat] = useState(true); // Initial loading state for the first fetch
@@ -54,6 +54,7 @@ function AdminChat({ updateChat, dispatch }) {
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId); // Set the selected chat ID
   };
+
 
   // Count how many chats the admin has not answered
   const unansweredChatsCount = userChats.filter(chat => chat.lastMessage && !chat.lastMessage.isFromAdmin).length;
@@ -113,6 +114,7 @@ function AdminChat({ updateChat, dispatch }) {
           setSelectedChatId={setSelectedChatId}
           updateChat={updateChat}
           dispatch={dispatch}
+          CHATS_INPUTS={CHATS_INPUTS}
         />
       ) : null}
     </div>

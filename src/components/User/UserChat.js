@@ -6,7 +6,7 @@ import DisplayUserChat from './DisplayUserChats'
 function Chat({dispatch, handleShowChat, CHATS_INPUTS, chats, updateChat, internetError}) {
 
   return (
-    <div className={`fixed bottom-0 right-0 z-20 h-[100%] w-full md:w-96 md:h-[auto]  bg-white overflow-auto`}>
+    <div className={`fixed bottom-0 right-0 z-0 h-[100%] w-full md:w-96 md:h-[auto]  bg-white overflow-auto`}>
         <nav className='bg-rose-900 w-full h-16 flex flex-row justify-between items-center'>
           <MdArrowBack  className='text-4xl text-white cursor-pointer' onClick={() => dispatch({type:'showChat', payload: handleShowChat = false})}/>
           <div className='flex flex-col justify-center items-start'>

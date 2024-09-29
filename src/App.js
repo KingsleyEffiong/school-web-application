@@ -179,7 +179,7 @@ function App() {
             <h2 className="text-lg">Checking Authentication...</h2>
           </div>
         ) : isAuthenticated ? (
-          <AdminChat updateChat={updateChat} dispatch={dispatch}/>
+          <AdminChat updateChat={updateChat} dispatch={dispatch} CHATS_INPUTS={CHATS_INPUTS}/>
         ) : (
           <Login
             dispatch={dispatch}
