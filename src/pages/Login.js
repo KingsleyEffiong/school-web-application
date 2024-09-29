@@ -7,18 +7,21 @@ function Form({ dispatch, SET_EMAIL, SET_PASSWORD, isLoading, loginError, }) {
   const navigate = useNavigate(); // Initialize useNavigate hook
   async function handleLogin() {
     dispatch({ type: 'LOGIN_REQUEST', payload: { isLoading: true } });
+    console.log('Loading first')
     try {
       const userCredential = await signInWithEmailAndPassword(auth, SET_EMAIL, SET_PASSWORD);
       console.log(userCredential);
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user: userCredential.user } });
       navigate('/phs_admin_chat');
-      
+      console.log('Loading sucess')
     } catch (error) {
       console.error(error);
+      console.log('Loading Failed')
       dispatch({ type: 'LOGIN_FAILURE', payload: { loginError: error.message } });
     }
     finally{
       dispatch({ type: 'LOGIN_REQUEST', payload: { isLoading: false } });
+      console.log('Loading finally')
     }
   }
 
