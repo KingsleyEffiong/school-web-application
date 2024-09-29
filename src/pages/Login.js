@@ -20,7 +20,7 @@ function Form({ dispatch, SET_EMAIL, SET_PASSWORD, isLoading, loginError, }) {
   }
 
   return (
-    <div className='w-[40rem] h-auto bg-rose-900 shadow-lg absolute z-30 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded'>
+    <div className='w-[40rem] h-auto bg-rose-900 shadow-lg absolute z-30 left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2 rounded'>
       <h1 className='text-white text-center text-3xl mt-3'>Admin Login</h1>
       <form className='w-full flex flex-col md:flex-row flex-wrap items-center md:justify-start md:items-start gap-5 px-4 text-white py-4'>
         <div className='w-72 '>
