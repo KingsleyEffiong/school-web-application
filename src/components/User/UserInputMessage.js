@@ -101,7 +101,7 @@ const inputRef = useRef(null)
         ref={inputRef}
         onChange={(e) => dispatch({ type: 'CHATS_INPUTS', payload: e.target.value })}
       />
-      <button className='bg-white text-rose-900 py-1 px-2 rounded-md hover:bg-rose-600 hover:text-white transition-colors duration-300 focus:outline-none focus:ring focus:ring-rose-600 focus:ring-offset-2 focus:bg-rose-600 focus:text-white text-xs' onClick={handleChat_inputs}>{disabled_input ? 'Sending message' : 'Send'}</button>
+      <button className='bg-white text-rose-900 py-1 px-2 rounded-md hover:bg-rose-600 hover:text-white transition-colors duration-300 focus:outline-none focus:ring focus:ring-rose-600 focus:ring-offset-2 focus:bg-rose-600 focus:text-white text-xs' onClick={handleChat_inputs}>Send</button>
     </div>
   );
 }

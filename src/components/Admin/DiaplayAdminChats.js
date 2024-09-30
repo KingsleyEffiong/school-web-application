@@ -6,6 +6,7 @@ import DarkBackground from '../../UI/DarkBackground';
 
 function DisplayAdminChat({ parentId, setSelectedChatId}) {
   const [chatMessages, setChatMessages] = useState([]);
+  const [disabled_input, setDisabledInput] = useState(false);
   const [adminMessage, setAdminMessage] = useState('');
   const chatContainerRef = useRef(null);
 
@@ -63,7 +64,7 @@ function DisplayAdminChat({ parentId, setSelectedChatId}) {
   // Function to handle sending an admin message
   const sendMessage = async () => {
     if (adminMessage.trim() === '') return;
-
+    setDisabledInput(true);
     const newMessage = {
       message: adminMessage,
       timestamp: Timestamp.now(),
@@ -83,6 +84,9 @@ function DisplayAdminChat({ parentId, setSelectedChatId}) {
       setAdminMessage(''); // Clear the input field
     } catch (error) {
       console.error('Error sending message:', error);
+    }
+    finally{
+      setDisabledInput(false)
     }
   };
 
@@ -125,6 +129,7 @@ function DisplayAdminChat({ parentId, setSelectedChatId}) {
         <button
           className="bg-white text-rose-900 py-1 px-2 rounded-md hover:bg-rose-600 hover:text-white transition-colors duration-300 focus:outline-none focus:ring focus:ring-rose-600 focus:ring-offset-2 focus:bg-rose-600 focus:text-white text-xs"
           onClick={sendMessage}
+          disabled={disabled_input}
         >
           Send
         </button>
