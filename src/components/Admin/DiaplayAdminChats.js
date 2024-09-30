@@ -124,6 +124,7 @@ function DisplayAdminChat({ parentId, setSelectedChatId}) {
           className="border-rose-900 border-4 w-60 h-10 text-rose-900 rounded-full outline-none py-1 px-3 ml-3 outline-white bg-gray-50"
           placeholder="Type a message..."
           value={adminMessage}
+          disabled={disabled_input}
           onChange={(e) => setAdminMessage(e.target.value)}
         />
         <button
