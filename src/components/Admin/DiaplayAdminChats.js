@@ -4,7 +4,7 @@ import { doc, updateDoc, arrayUnion, getDoc, Timestamp } from 'firebase/firestor
 import { db } from '../../Firebase'; // Your Firestore instance
 import DarkBackground from '../../UI/DarkBackground';
 
-function DisplayAdminChat({ parentId, setSelectedChatId, updateChat}) {
+function DisplayAdminChat({ parentId, setSelectedChatId}) {
   const [chatMessages, setChatMessages] = useState([]);
   const [adminMessage, setAdminMessage] = useState('');
   const chatContainerRef = useRef(null);
@@ -29,18 +29,16 @@ function DisplayAdminChat({ parentId, setSelectedChatId, updateChat}) {
   
     // Only set interval if updateChat is true
     let intervalId;
-    if (updateChat) {
       intervalId = setInterval(() => {
         fetchChatMessages(); // Fetch chat messages in the background
       }, 1000); // Run every second
-    }
   
     // Cleanup the interval when updateChat becomes false or the component unmounts
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
   
-  }, [parentId, updateChat]); // Dependency array includes parentId and updateChat
+  }, [parentId]); // Dependency array includes parentId and updateChat
   
 
   useEffect(() => {
@@ -98,6 +96,8 @@ function DisplayAdminChat({ parentId, setSelectedChatId, updateChat}) {
     document.addEventListener('keypress', handleKeypress)
     return () => document.removeEventListener('keypress', handleKeypress)
   },[sendMessage]);
+
+
   return (
     <>
     <div className='flex flex-col gap-2  py-9 px-4 w-[22rem] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-auto h-[500px] z-30 bg-white rounded-2xl' ref={chatContainerRef}>

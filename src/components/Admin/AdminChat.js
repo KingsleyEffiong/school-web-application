@@ -49,12 +49,27 @@ function AdminChat({ updateChat, dispatch, CHATS_INPUTS }) {
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []); // Empty dependency array to run this only once on mount
+  }, [CHATS_INPUTS]); // Empty dependency array to run this only once on mount
 
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId); // Set the selected chat ID
   };
 
+  useEffect(() =>{
+    let intervalId;
+    console.log(CHATS_INPUTS)
+    if (CHATS_INPUTS) {
+      intervalId = setInterval(() => {
+        console.log(CHATS_INPUTS)
+    
+      }, 1000); // Run every second
+    }
+  
+    // Cleanup the interval when updateChat becomes false or the component unmounts
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  },[CHATS_INPUTS])
 
   // Count how many chats the admin has not answered
   const unansweredChatsCount = userChats.filter(chat => chat.lastMessage && !chat.lastMessage.isFromAdmin).length;
@@ -72,16 +87,15 @@ function AdminChat({ updateChat, dispatch, CHATS_INPUTS }) {
       <nav className='bg-rose-700 w-fit h-16 flex flex-row justify-between items-center shadow-lg px-3'>
         <div className='flex flex-col justify-center items-start'>
           <h2 className='text-base text-white px-2'>Messages</h2>
-          <span className='text-sm text-gray-200'>{`Unanswered Chats: ${unansweredChatsCount}`}</span>
+          <span className='text-sm text-gray-200'>{`${userChats.length === 0 ? 'No chat yet' :  'Unanswred chat ' + unansweredChatsCount }`}</span>
         </div>
       </nav>
       <main className='w-full px-3 py-3 flex flex-col gap-3'>
         {userChats.length > 0 ? (
           userChats.map((chat) => (
-            <div key={chat.id} className='mb-5 max:w-[250px] min:w-[250px]' onClick={() => handleChatClick(chat.id)}>
+            <div key={chat.id} className='mb-5 max:w-[250px] min:w-[250px] md:w-fit' onClick={() => handleChatClick(chat.id)}>
               {chat.lastMessage ? (
                 <div className='flex flex-row bg-white px-3 py-4 md:w-96 items-center rounded-lg cursor-pointer shadow-lg relative'>
-                  {/* Badge for unanswered messages */}
                   {!chat.lastMessage.isFromAdmin && (
                     <div className="w-3rem h-3rem rounded-full absolute top-[-15px] right-0 bg-red-900 text-white px-2 py-1">
                       No reply yet

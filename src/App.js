@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import AdminChat from "./components/Admin/AdminChat";
 import UserChat from "./components/User/UserChat";
+import PageNotFound from "./pages/PageNotFound";
 
 // Define initial state
 const initialState = {
@@ -20,7 +21,7 @@ const initialState = {
   SET_EMAIL: '',
   SET_PASSWORD: '',
   isLoading: false,
-  loginError: null,
+  loginError: '',
   updateChat: false,
   internetError: null,
   isAuthenticated: false,
@@ -77,14 +78,15 @@ function reducer(state, action) {
           isAuthenticated: true,
           checkingAuth: false, // Set to false once checked
         };
-      case 'LOGIN_FAILURE':
-        return {
-          ...state,
-          isLoading: false,
-          isAuthenticated: false,
-          checkingAuth: false, // Set to false once checked
-          loginError: action.payload.error,
-        };
+        case 'LOGIN_FAILED':
+          console.log('LOGIN_FAILED action dispatched with error:', action.payload.error);
+          return {
+            ...state,
+            isLoading: false,
+            isAuthenticated: false,
+            loginError: action.payload.error,
+          };
+        
     case 'CHATS_INPUTS' :
       return{
         ...state,
@@ -159,6 +161,7 @@ function App() {
     <Route path="program" element={<Programs />} />
     <Route path="offer" element={<Offer />} />
     <Route path="contact" element={<Contact />} />
+    <Route path="*" element={<PageNotFound />} />
     <Route
       path="phs_admin_login"
       element={

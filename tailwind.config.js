@@ -5,6 +5,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      active: {
+        customBlue: '#1DA1F2',
+        customGray: '#F5F5F5',
+      },
       keyframes: {
         scaleUpCenter: {
           '0%': {
@@ -36,7 +40,6 @@ module.exports = {
             opacity: 1,
           },
       },
-
       animateLeft:{
         '0%': {
           transform: 'translateX(-100px)',

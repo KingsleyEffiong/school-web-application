@@ -72,7 +72,7 @@ const inputRef = useRef(null)
     }
     finally{
       dispatch({type:'update_chat', payload: updateChat === false ? updateChat = true : updateChat =  false});
-      console.log(updateChat)
+      console.log(updateChat);
     }
   }
   

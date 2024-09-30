@@ -22,7 +22,7 @@ function Navbar({responsive, handleShowMenu, toggleMenu, handleCloseMenu}) {
     />
   )
 )}
-      <Route  toggleMenu={toggleMenu} responsive={responsive}/>
+      <Route  toggleMenu={toggleMenu} responsive={responsive} handleCloseMenu={handleCloseMenu}/>
     </nav>
   );
 }
