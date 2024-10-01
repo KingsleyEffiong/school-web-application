@@ -19,13 +19,13 @@ function Route({toggleMenu, responsive, handleCloseMenu}) {
             : 'text-gray-600'
         }>What We Offer</NavLink>
     </li>
-    <li className='bg-white py-5 px-4 hover:bg-amber-500 hover: transition-all ease-in-out duration-1000 animate-scaleUpCenter'>
+    {/* <li className='bg-white py-5 px-4 hover:bg-amber-500 hover: transition-all ease-in-out duration-1000 animate-scaleUpCenter'>
       <NavLink to='contact'className={({ isActive }) => 
           isActive 
             ? 'text-rose-900 font-bold' 
             : 'text-gray-600'
         }>Contact Us</NavLink>
-    </li>
+    </li> */}
     </ul>}
 
     {toggleMenu && responsive && 
@@ -44,15 +44,15 @@ function Route({toggleMenu, responsive, handleCloseMenu}) {
             : 'text-rose-500'
         }>What We Offer</NavLink>
       </li>
-      <li className={`${responsive ? 'bg-none text-white text-center decoration-slate-50 underline' : 'bg-white'} py-5 px-4 ${toggleMenu && responsive ? "hover:bg-none" : 'hover:bg-amber-500 hover: transition-all ease-in-out duration-1000' }`} onClick={handleCloseMenu}>
+      {/* <li className={`${responsive ? 'bg-none text-white text-center decoration-slate-50 underline' : 'bg-white'} py-5 px-4 ${toggleMenu && responsive ? "hover:bg-none" : 'hover:bg-amber-500 hover: transition-all ease-in-out duration-1000' }`} onClick={handleCloseMenu}>
         <NavLink to='contact' className={({ isActive }) => 
           isActive 
             ? 'text-white font-bold' 
             : 'text-rose-500'
         }>Contact Us</NavLink>
-      </li>
+      </li> */}
       </ul>
-    }
+    }                           
     </div>
   )
 }
